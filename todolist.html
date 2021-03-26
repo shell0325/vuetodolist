@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.12/dist/vue.js"></script>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+
+  <body>
+    <div id="app">
+      <table>
+        <tr>
+          <td v-for="item in items" :key="item.id">
+            <input
+              type="radio"
+              :value="item.value"
+              v-model="show"
+              name="show"
+            />
+            <label :for="item.id">{{item.text}}</label>
+          </td>
+        </tr>
+      </table>
+      <div>
+        <table>
+          <thead>
+            <tr>
+              <td>ID</td>
+              <td>コメント</td>
+              <td>状態</td>
+            </tr>
+          </thead>
+          <tbody v-for="(todo,index,items) in showTodo">
+            <tr>
+              <td>{{todo.Id}}</td>
+              <td>{{todo.text}}</td>
+              <td>
+                <button @click="changeTodo(todo.Id)">{{todo.status}}</button>
+              </td>
+              <td>
+                <input type="button" value="削除" @click="removeTodo(index)" />
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <h1>新規タスクの追加</h1>
+      <input type="text" v-model="addtext" />
+      <input type="button" value="追加" @click="addToDo" />
+    </div>
+    <script>
+      new Vue({
+        el: '#app',
+        data: {
+          addtext: '',
+          todos: [],
+          todoStatus: '作業中',
+          items: [
+            { id: 'all', value: "all", text: '全て' },
+            { id: 'doing', value: "done", text: '作業中' },
+            { id: 'done', value: "doing", text: '完了' },
+          ],
+          show:"all",
+        },
+        methods: {
+          addToDo() {
+            var todo = {
+              Id: 0,
+              text: this.addtext,
+              status: this.todoStatus,
+              done: false,
+            };
+            if (this.addtext) {
+              if (this.todos.length !== 0) {
+                todo.Id = this.todos[this.todos.length - 1].Id + 1;
+              }
+              this.todos.push(todo);
+              this.addtext = '';
+            }
+          },
+          changeTodo(index) {
+            if (this.todos[index].status === '作業中') {
+              this.todos[index].status = '完了';
+              this.todos[index].done = true;
+              console.log
+            } else if (this.todos[index].status === '完了') {
+              this.todos[index].status = '作業中';
+              this.todos[index].done = false
+            }
+          },
+          removeTodo(index) {
+            this.todos.splice(index, 1);
+          },
+        },
+        computed: {
+          showTodo() {
+            switch (this.show) {
+              case "all":
+                return this.todos
+              case "done":
+                return this.todos.filter((e) => !e.done);
+              case "doing":
+                return this.todos.filter((e) => e.done);
+              default:
+                return [];
+            }
+          },
+        },
+      });
+    </script>
+  </body>
+</html>
